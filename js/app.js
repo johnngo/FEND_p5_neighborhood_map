@@ -45,6 +45,19 @@ var vModel = {
     init:function () {
     var self = this;
 
+    self.query =ko.observable('');
+    self.searchFilter=function(value){
+      self.locationList.removeAll();
+      for(var i in model.locations){
+        if(model.locations[i].name.toLowerCase().indexOf(value.toLowerCase()) >=0){
+          self.locationList.push(model.locations[i]);
+        }
+      }
+    }
+
+    self.query.subscribe(self.searchFilter);
+
+
     this.locationList=ko.observableArray([]);
     model.locations.forEach(function(Item){
         self.locationList.push(new view.init(Item));
@@ -72,17 +85,20 @@ var vModel = {
         }
 
          marker.addListener('click', function(){
+            console.log('click');
             populateInfoWindow(this, largeInfoWindow);
          });
 
-         function populateInfoWindow(marker, infowindow){
-            if(infowindow.marker != marker){
-                infowindow.marker=marker;
-                infowindow.setContent('<div>' + marker.title + '</div>');
-                infowindow.open(map, marker);
-                infowindow.addListener('closeclick',function(){
-                infowindow.setMarker = null;
-                });
+          function populateInfoWindow(marker, infowindow) {
+        // Check to make sure the infowindow is not already opened on this marker.
+        if (infowindow.marker != marker) {
+          infowindow.marker = marker;
+          infowindow.setContent('<div>' + marker.title + '</div>');
+          infowindow.open(map, marker);
+          // Make sure the marker property is cleared if the infowindow is closed.
+          infowindow.addListener('closeclick',function(){
+            infowindow.setMarker = null;
+          });
 
             }
          }
