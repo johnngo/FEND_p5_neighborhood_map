@@ -6,36 +6,43 @@ var model = {
 locations : [
     {   name : 'craft beer',
         address: 'granville island',
-        location: {lat:49.283, lng: -123.123}
+        location: {lat:49.270999, lng: -123.105898},
+        content: ''
     },
     {
         name: 'tap and barrel',
         address: 'downtown vancouver',
-        location: {lat:49.283, lng: -123.125}
+        location: {lat:49.289365, lng: -123.116712},
+        content:''
     },
     {
         name: 'steamworks',
         address: 'gastown',
-        location: {lat:49.283, lng: -123.127}
+        location: {lat:49.284681, lng: -123.110780},
+        content: ''
     },
     {
-        name: 'tiki room',
-        address: 'main st',
-        location: {lat:49.283, lng: -123.129}
+        name: 'library square',
+        address: 'downtown',
+        location: {lat:49.279806, lng: -123.114659},
+        content: ''
     },
     {
-        name: 'brickhouse',
+        name: 'cinema public',
         address: 'main st',
-        location: {lat:49.283, lng: -123.131}
+        location: {lat:49.280158, lng: -123.121305},
+        content:''
     },
-    {   name: 'cascade room',
-        address: 'main st',
-        location: {lat:49.283, lng: -123.133}
+    {   name: 'new oxford',
+        address: 'yaletown',
+        location: {lat:49.275845, lng: -123.121952},
+        content:''
     },
     {
-        name: 'nomad',
-        address: 'main st',
-        location: {lat:49.283, lng: -123.139}
+        name: 'the park',
+        address: 'west end',
+        location: {lat:49.286720, lng: -123.141296},
+        content:''
     }
     ]
 };
@@ -62,20 +69,24 @@ var vModel = {
     model.locations.forEach(function(Item){
         self.locationList.push(new view.init(Item));
     });
-
+    console.log(this.locationList);
     this.renderMarker= function() {
 
-        var largeInfoWindow= new google.maps.InfoWindow();
+        var largeInfoWindow= new google.maps.InfoWindow({
+          maxWidth: 250
+        });
         var locations=model.locations;
         for (var i=0 ; i < locations.length; i++) {
             var position = locations[i].location;
             var name = locations[i].name;
+            var content = locations[i].content;
             //console.log(name);
 
          var marker = new google.maps.Marker({
             position: position,
             map: map,
             title: name,
+            content:content,
             animation: google.maps.Animation.DROP,
 
         });
@@ -85,7 +96,7 @@ var vModel = {
         }
 
          marker.addListener('click', function(){
-            console.log('click');
+            //console.log('click');
             populateInfoWindow(this, largeInfoWindow);
          });
 
