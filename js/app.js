@@ -46,11 +46,21 @@ locations : [
     }
     ]
 };
+
+
 var map;
 var markers = [];
 var vModel = {
     init:function () {
     var self = this;
+
+  this.selectedLocation = function () {
+
+          var marker= this.marker;
+          console.log(marker);
+          google.maps.event.trigger(marker, 'click');
+        };
+        //remove all markers except one selected
 
     self.query =ko.observable('');
     self.searchFilter=function(value){
@@ -69,12 +79,13 @@ var vModel = {
     model.locations.forEach(function(Item){
         self.locationList.push(new view.init(Item));
     });
-    console.log(this.locationList);
+
     this.renderMarker= function() {
 
         var largeInfoWindow= new google.maps.InfoWindow({
           maxWidth: 250
         });
+        var bounds = new google.maps.LatLngBounds();
         var locations=model.locations;
         for (var i=0 ; i < locations.length; i++) {
             var position = locations[i].location;
@@ -90,17 +101,39 @@ var vModel = {
             animation: google.maps.Animation.DROP,
 
         });
-
-         console.log(marker);
          markers.push(marker);
-        }
+         self.locationList()[i].marker=marker;
 
+
+         bounds.extend(marker.position);
          marker.addListener('click', function(){
-            //console.log('click');
             populateInfoWindow(this, largeInfoWindow);
          });
+        }
+        map.fitBounds(bounds);
 
-          function populateInfoWindow(marker, infowindow) {
+        function showListings() {
+          var bounds= new google.maps.LatLngBounds();
+          for(var i =0; i < markers.length; i++){
+            markers[i].setMap(map);
+            bounds.extend(markers[i].position);
+
+
+        function hideListings(marker) {
+          for(var i = 0; i< markers.length; i++){
+            markers[i].setMap(null);
+          }
+          }
+          map.fitBounds(bounds);
+
+
+        }
+        }
+
+        document.getElementById('show-listings').addEventListener('click', showListings);
+        //document.getElementById('hide-listings').addEventListener('click', hideListings);
+
+         function populateInfoWindow(marker, infowindow) {
         // Check to make sure the infowindow is not already opened on this marker.
         if (infowindow.marker != marker) {
           infowindow.marker = marker;
@@ -124,7 +157,7 @@ var view = {
 }
 
 var vM = new vModel.init();
-ko.applyBindings(new vModel.init());
+ko.applyBindings(vM);
 
 
     function initMap() {
