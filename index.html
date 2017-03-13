@@ -17,7 +17,7 @@
         <div class='col-md-3 col-sm-3'>
             <input placeholder="search local breweries..." type='search' data-bind='textInput: query'>
             <ul class='list-group' data-bind="foreach:locationList">
-                <li class='list-group-item' data-bind="text:name"></li>
+                <li class='list-group-item' data-bind="text:name, click:$parent.selectedLocation"></li>
             </ul>
         </div>
         <div class='col-md-9 col-sm-9'>
