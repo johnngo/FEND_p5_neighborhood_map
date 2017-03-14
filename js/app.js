@@ -2,6 +2,7 @@
 neighborhood map
    ************/
 
+
 var model = {
 locations : [
     {   name : 'craft beer',
@@ -131,7 +132,15 @@ var vModel = {
         }
 
         document.getElementById('show-listings').addEventListener('click', showListings);
-        //document.getElementById('hide-listings').addEventListener('click', hideListings);
+        document.getElementById('hide-listings').addEventListener('click', function() {
+          hideListings(markers);
+
+          function hideListings(markers){
+            for(var i =0; i < markers.length; i++){
+              markers[i].setMap(null);
+            }
+          }
+        });
 
          function populateInfoWindow(marker, infowindow) {
         // Check to make sure the infowindow is not already opened on this marker.
