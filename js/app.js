@@ -51,31 +51,39 @@ locations : [
 
 var map;
 var markers = [];
+
+var titlesArray = model.locations.map(function(value) {
+    return value.name;
+});
+
 var vModel = {
     init:function () {
     var self = this;
 
-  this.selectedLocation = function () {
+// filter function, binding ko to inputValue
+  this.inputValue = ko.observable('');
+    this.titles = ko.observableArray(titlesArray);
+    this.filteredTitles = ko.computed(function(){
+        for(var i = 0; i < markers.length; i++) {
+            if(markers[i].title.toLowerCase().includes(self.inputValue().toLowerCase()) === false) {
+                markers[i].setVisible(false);
+            } else {
+                markers[i].setVisible(true);
+            }
+        }
+       return self.titles().filter(function(value){
+           return value.toLowerCase().includes(self.inputValue().toLowerCase());
+       });
+    });
 
+//credit to Karol, helping with building the click event
+  this.selectedLocation = function () {
           var marker= this.marker;
-          console.log(marker);
           google.maps.event.trigger(marker, 'click');
         };
-        //remove all markers except one selected
-
-    self.query =ko.observable('');
-    self.searchFilter=function(value){
-      self.locationList.removeAll();
-      for(var i in model.locations){
-        if(model.locations[i].name.toLowerCase().indexOf(value.toLowerCase()) >=0){
-          self.locationList.push(model.locations[i]);
-        }
-      }
-    }
-
-    self.query.subscribe(self.searchFilter);
 
 
+//list View
     this.locationList=ko.observableArray([]);
     model.locations.forEach(function(Item){
         self.locationList.push(new view.init(Item));
@@ -88,6 +96,7 @@ var vModel = {
         });
         var bounds = new google.maps.LatLngBounds();
         var locations=model.locations;
+          //create a marker for each location
         for (var i=0 ; i < locations.length; i++) {
             var position = locations[i].location;
             var name = locations[i].name;
@@ -105,12 +114,15 @@ var vModel = {
          markers.push(marker);
          self.locationList()[i].marker=marker;
 
+        bounds.extend(marker.position);
 
-         bounds.extend(marker.position);
          marker.addListener('click', function(){
             populateInfoWindow(this, largeInfoWindow);
          });
-        }
+         marker.addListener('click',function(){
+            toggleBounce(this);
+         });
+      }
         map.fitBounds(bounds);
 
         function showListings() {
@@ -119,12 +131,6 @@ var vModel = {
             markers[i].setMap(map);
             bounds.extend(markers[i].position);
 
-
-        function hideListings(marker) {
-          for(var i = 0; i< markers.length; i++){
-            markers[i].setMap(null);
-          }
-          }
           map.fitBounds(bounds);
 
 
@@ -134,30 +140,37 @@ var vModel = {
         document.getElementById('show-listings').addEventListener('click', showListings);
         document.getElementById('hide-listings').addEventListener('click', function() {
           hideListings(markers);
-
-          function hideListings(markers){
-            for(var i =0; i < markers.length; i++){
-              markers[i].setMap(null);
-            }
+           function hideListings(marker) {
+          for(var i = 0; i< markers.length; i++){
+            markers[i].setMap(null);
           }
+          }
+
         });
 
          function populateInfoWindow(marker, infowindow) {
-        // Check to make sure the infowindow is not already opened on this marker.
-        if (infowindow.marker != marker) {
+
+        //if (infowindow.marker != marker) {
           infowindow.marker = marker;
+          console.log(marker);
           infowindow.setContent('<div>' + marker.title + '</div>');
           infowindow.open(map, marker);
-          // Make sure the marker property is cleared if the infowindow is closed.
-          infowindow.addListener('closeclick',function(){
-            infowindow.setMarker = null;
-          });
+        //  Make sure the marker property is cleared if the infowindow is closed.
+        //  infowindow.addListener('closeclick',function(){
+        //  infowindow.setMarker = null;
+         // });
 
             }
+
+            function toggleBounce(marker){
+              marker.setAnimation(google.maps.Animation.BOUNCE);
+              setTimeout(function(){marker.setAnimation(null);},1400);
+            }
+
          }
-    }
-  }
-}
+        }
+      }
+
 
 var view = {
     init: function (data){
@@ -170,10 +183,19 @@ ko.applyBindings(vM);
 
 
     function initMap() {
-
+      vancouverDowntown = {lat: 49.282455, lng: -123.1234};
         map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 49.282455, lng: -123.1234},
+          center: vancouverDowntown,
           zoom: 14
         });
       vM.renderMarker();
       }
+
+      /***********
+      yelp api
+
+      ********/
+
+
+
+
