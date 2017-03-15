@@ -56,6 +56,10 @@ var titlesArray = model.locations.map(function(value) {
     return value.name;
 });
 
+var view =  function (data){
+      this.name=ko.observable(data.name);
+    };
+
 var vModel = {
     init:function () {
     var self = this;
@@ -86,7 +90,7 @@ var vModel = {
 //list View
     this.locationList=ko.observableArray([]);
     model.locations.forEach(function(Item){
-        self.locationList.push(new view.init(Item));
+        self.locationList.push(new view(Item));
     });
 
     this.renderMarker= function() {
@@ -172,12 +176,6 @@ var vModel = {
       }
 
 
-var view = {
-    init: function (data){
-        this.name=ko.observable(data.name);
-    },
-}
-
 var vM = new vModel.init();
 ko.applyBindings(vM);
 
@@ -193,9 +191,4 @@ ko.applyBindings(vM);
 
       /***********
       yelp api
-
       ********/
-
-
-
-
