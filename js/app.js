@@ -52,32 +52,20 @@ locations : [
 var map;
 var markers = [];
 
-var titlesArray = model.locations.map(function(value) {
-    return value.name;
-});
-
 var view =  function (data){
       this.name=ko.observable(data.name);
+      this.showMe=ko.observable(true);
     };
+
 
 var vModel = {
     init:function () {
     var self = this;
-
-// filter function, binding ko to inputValue
-  this.inputValue = ko.observable('');
-    this.titles = ko.observableArray(titlesArray);
-    this.filteredTitles = ko.computed(function(){
-        for(var i = 0; i < markers.length; i++) {
-            if(markers[i].title.toLowerCase().includes(self.inputValue().toLowerCase()) === false) {
-                markers[i].setVisible(false);
-            } else {
-                markers[i].setVisible(true);
-            }
-        }
-       return self.titles().filter(function(value){
-           return value.toLowerCase().includes(self.inputValue().toLowerCase());
-       });
+    //marker.setMap(map);
+//list View
+    this.locationList=ko.observableArray([]);
+    model.locations.forEach(function(Item){
+        self.locationList.push(new view(Item));
     });
 
 //credit to Karol, helping with building the click event
@@ -86,11 +74,23 @@ var vModel = {
           google.maps.event.trigger(marker, 'click');
         };
 
+  //credit to Ryan Vrba, building the filter function
+     this.inputValue = ko.observable('');
+        //   this.titles = ko.observableArray(titlesArray);
+           this.filteredTitles = ko.computed(function(){
+            var filter = self.inputValue().toLowerCase();
 
-//list View
-    this.locationList=ko.observableArray([]);
-    model.locations.forEach(function(Item){
-        self.locationList.push(new view(Item));
+          for(var i =0; i<self.locationList().length;i++){
+            if(self.locationList()[i].name().toLowerCase().includes(filter)=== true){
+              self.locationList()[i].showMe(true);
+              if(self.locationList()[i].marker != undefined){
+                self.locationList()[i].marker.setVisible(true);
+              }
+            } else{
+              self.locationList()[i].showMe(false);
+              self.locationList()[i].marker.setVisible(false);
+            }
+          }
     });
 
     this.renderMarker= function() {
@@ -105,7 +105,6 @@ var vModel = {
             var position = locations[i].location;
             var name = locations[i].name;
             var content = locations[i].content;
-            //console.log(name);
 
          var marker = new google.maps.Marker({
             position: position,
@@ -116,7 +115,10 @@ var vModel = {
 
         });
          markers.push(marker);
+         //added marker attribute/property to location list
          self.locationList()[i].marker=marker;
+
+         marker.setMap(map);
 
         bounds.extend(marker.position);
 
@@ -156,7 +158,6 @@ var vModel = {
 
         //if (infowindow.marker != marker) {
           infowindow.marker = marker;
-          console.log(marker);
           infowindow.setContent('<div>' + marker.title + '</div>');
           infowindow.open(map, marker);
         //  Make sure the marker property is cleared if the infowindow is closed.
@@ -172,6 +173,7 @@ var vModel = {
             }
 
          }
+
         }
       }
 
@@ -188,7 +190,6 @@ ko.applyBindings(vM);
         });
       vM.renderMarker();
       }
-
       /***********
       yelp api
       ********/
