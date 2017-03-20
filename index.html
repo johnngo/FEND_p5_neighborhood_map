@@ -21,7 +21,7 @@
                 <input id='hide-listings' type='button' value='Hide Listings'>
                 </div>
             <ul class='list-group' data-bind="foreach:locationList">
-                <li class='list-group-item' data-bind="text:name, click:$parent.selectedLocation"></li>
+                <li class='list-group-item' data-bind="text:name, visible: showMe, click:$parent.selectedLocation"></li>
             </ul>
         </div>
         <div class='col-md-9 col-sm-9'>
