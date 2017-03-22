@@ -68,15 +68,14 @@ var vModel = {
         self.locationList.push(new view(Item));
     });
 
-//credit to Karol, helping with building the click event
+//credit to Karol, help building the click event
   this.selectedLocation = function () {
           var marker= this.marker;
           google.maps.event.trigger(marker, 'click');
         };
 
-  //credit to Ryan Vrba, building the filter function
-     this.inputValue = ko.observable('');
-        //   this.titles = ko.observableArray(titlesArray);
+  //credit to Ryan Vrba, help building the filter function
+      this.inputValue = ko.observable('');
            this.filteredTitles = ko.computed(function(){
             var filter = self.inputValue().toLowerCase();
 
@@ -190,6 +189,66 @@ ko.applyBindings(vM);
         });
       vM.renderMarker();
       }
-      /***********
+/**********************
       yelp api
-      ********/
+      *************************/
+function nonce_generate() {
+  return (Math.floor(Math.random() * 1e12).toString());
+};
+
+var yelp_url = YELP_BASE_URL + 'business/' +self.selected_place().Yelp.business_id;
+
+var YELP_BASE_URL ="https://api.yelp.com/v2/search?";
+    YELP_KEY = "3pizkICOmm2BBCD3iCFFfw";
+    YELP_TOKEN = "DUKnfvHIOsLPslar31vZ6PH6ziQPz46I";
+    YELP_KEY_SECRET = "LWluynOmA6VEwr9znKOgBQNclfI";
+    YELP_TOKEN_SECRET = "ci0BcAtBzZV3OKvsRvGBS92TWMY";
+
+var parameters = {
+  oauth_consumer_key: YELP_KEY,
+  oauth_token: YELP_TOKEN,
+  oauth_nonce: nonce_generate(),
+  oauth_timestamp: Math.floor(Date.now()/1000),
+  oauth_signature_method: 'HMAC-SHA1',
+  oauth_version : '1.0',
+  callback: 'cb'      // This is crucial to include for jsonp implementation in AJAX or else the oauth-signature will be wrong.
+};
+
+var encodedSignature = oauthSignature.generate('GET',yelp_url, parameters, YELP_KEY_SECRET, YELP_TOKEN_SECRET);
+    parameters.oauth_signature = encodedSignature;
+
+var settings = {
+    url: yelp_url,
+    data: parameters,
+    cache: true,                // This is crucial to include as well to prevent jQuery from adding on a cache-buster parameter "_=23489489749837", invalidating our oauth-signature
+    dataType: 'jsonp',
+    success: function(results) {
+        // Do stuff with results
+    },
+    error: function() {
+        // Do stuff on fail
+    }
+    };
+
+    // Send AJAX query via jQuery library.
+    $.ajax(settings);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
