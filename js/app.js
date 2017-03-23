@@ -192,17 +192,22 @@ ko.applyBindings(vM);
 /**********************
       yelp api
       *************************/
+
+
 function nonce_generate() {
   return (Math.floor(Math.random() * 1e12).toString());
 };
 
-var yelp_url = YELP_BASE_URL + 'business/' +self.selected_place().Yelp.business_id;
+var yelp_url = YELP_BASE_URL + 'business/' + id;
 
-var YELP_BASE_URL ="https://api.yelp.com/v2/search?";
+var YELP_BASE_URL ="https://api.yelp.com/v2/";
     YELP_KEY = "3pizkICOmm2BBCD3iCFFfw";
     YELP_TOKEN = "DUKnfvHIOsLPslar31vZ6PH6ziQPz46I";
     YELP_KEY_SECRET = "LWluynOmA6VEwr9znKOgBQNclfI";
     YELP_TOKEN_SECRET = "ci0BcAtBzZV3OKvsRvGBS92TWMY";
+
+
+function getData(id){
 
 var parameters = {
   oauth_consumer_key: YELP_KEY,
@@ -224,15 +229,19 @@ var settings = {
     dataType: 'jsonp',
     success: function(results) {
         // Do stuff with results
+        console.log(results);
     },
     error: function() {
         // Do stuff on fail
+        console.log('No results found!');
     }
     };
 
     // Send AJAX query via jQuery library.
     $.ajax(settings);
+};
 
+getData("san-tung-san-francisco-2");
 
 
 
