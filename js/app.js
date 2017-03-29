@@ -128,7 +128,7 @@ var vModel = {
                     title: name,
                     yelpTitle: yelpTitle,
                     animation: google.maps.Animation.DROP,
-                     id: i,
+                    id: i,
 
                 });
                 markers.push(marker);
@@ -176,15 +176,10 @@ var vModel = {
 
             function populateInfoWindow(marker, infowindow) {
 
-                var name;
-                var rating;
-                var phone;
-                var address;
-
-                name = marker.yelpData.name;
-                rating = marker.yelpData.rating_img_url_small;
-                phone = marker.yelpData.display_phone;
-                address = marker.yelpData.location.display_address;
+                var name = marker.yelpData.name;
+                var rating = marker.yelpData.rating_img_url_small;
+                var phone = marker.yelpData.display_phone;
+                var address = marker.yelpData.location.display_address;
 
                 content = ('<div>'+ '<strong>' + name + ' ' + '</strong>');
                 content += ('<br>' + '<img src="' + rating + '" alt="Number of yelp stars"' + '/>');
@@ -274,3 +269,7 @@ function getAjax(yelp_url, i) {
     $.ajax(settings);
 };
 
+function googleError() {
+    console.log('google error');
+    alert('Sorry google maps is not connecting');
+};
