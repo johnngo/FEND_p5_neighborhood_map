@@ -98,7 +98,7 @@ var vModel = {
             for (var i = 0; i < self.locationList().length; i++) {
                 if (self.locationList()[i].name().toLowerCase().includes(filter) === true) {
                     self.locationList()[i].showMe(true);
-                    if (self.locationList()[i].marker != undefined) {
+                    if (self.locationList()[i].marker !== undefined) {
                         self.locationList()[i].marker.setVisible(true);
                     }
                 } else {
@@ -147,41 +147,22 @@ var vModel = {
                 });
                 var yelp_url = 'https://api.yelp.com/v2/business/' + yelpTitle;
                 getAjax(yelp_url, i);
-                console.log(i);
-                console.log(yelp_url);
+                // console.log(i);
+                // console.log(yelp_url);
 
             }
             map.fitBounds(bounds);
 
-            function showListings() {
-                var bounds = new google.maps.LatLngBounds();
-                for (var i = 0; i < markers.length; i++) {
-                    markers[i].setMap(map);
-                    bounds.extend(markers[i].position);
-                    map.fitBounds(bounds);
-                }
-            }
-
-            document.getElementById('show-listings').addEventListener('click', showListings);
-            document.getElementById('hide-listings').addEventListener('click', function() {
-                hideListings(markers);
-
-                function hideListings(marker) {
-                    for (var i = 0; i < markers.length; i++) {
-                        markers[i].setMap(null);
-                    }
-                }
-
-            });
 
             function populateInfoWindow(marker, infowindow) {
+                var name,rating,phone, address;
 
-                var name = marker.yelpData.name;
-                var rating = marker.yelpData.rating_img_url_small;
-                var phone = marker.yelpData.display_phone;
-                var address = marker.yelpData.location.display_address;
+                name = marker.yelpData.name || 'no name provided';
+                rating = marker.yelpData.rating_img_url_small || 'no rating available';
+                phone = marker.yelpData.display_phone || 'no phone provided';
+                address = marker.yelpData.location.display_address || 'no reviews at this time';
 
-                content = ('<div>'+ '<strong>' + name + ' ' + '</strong>');
+                content = ('<div>' + '<strong>' + name + ' ' + '</strong>');
                 content += ('<br>' + '<img src="' + rating + '" alt="Number of yelp stars"' + '/>');
                 content += ('<br>' + phone + '<br>' + address + '</div>');
 
@@ -198,10 +179,10 @@ var vModel = {
                 }, 1400);
             }
 
-        }
+        };
 
     }
-}
+};
 
 
 var vM = new vModel.init();
@@ -223,9 +204,9 @@ function initMap() {
       yelp api
       *************************/
 
-function nonce_generate() {
+function nonceGenerate() {
     return (Math.floor(Math.random() * 1e12).toString());
-};
+}
 
 function getAjax(yelp_url, i) {
 
@@ -238,7 +219,7 @@ function getAjax(yelp_url, i) {
     var parameters = {
         oauth_consumer_key: YELP_KEY,
         oauth_token: YELP_TOKEN,
-        oauth_nonce: nonce_generate(),
+        oauth_nonce: nonceGenerate(),
         oauth_timestamp: Math.floor(Date.now() / 1000),
         oauth_signature_method: 'HMAC-SHA1',
         oauth_version: '1.0',
@@ -257,19 +238,20 @@ function getAjax(yelp_url, i) {
         success: function(results) {
             // Do stuff with results
             markers[i].yelpData = results;
-            console.log(results);
+            // console.log(results);
         },
-        error: function() {
+        error: function(error) {
             // Do stuff on fail
-            console.log('No results found!');
+            markers[i].yelpData = 'error, data is not connecting'
+
         }
     };
 
     // Send AJAX query via jQuery library.
     $.ajax(settings);
-};
+}
 
 function googleError() {
     console.log('google error');
     alert('Sorry google maps is not connecting');
-};
+}
