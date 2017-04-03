@@ -79,6 +79,7 @@ var vModel = {
     init: function() {
         var self = this;
 
+        this.yelpError = ko.observable("");
         this.locationList = ko.observableArray([]);
         model.locations.forEach(function(Item) {
             self.locationList.push(new view(Item));
@@ -242,8 +243,8 @@ function getAjax(yelp_url, i) {
         },
         error: function(error) {
             // Do stuff on fail
-            markers[i].yelpData = 'error, data is not connecting'
-
+            markers[i].yelpData = 'error, Yelp data is not connecting'
+            vM.yelpError(markers[i].yelpData);
         }
     };
 

@@ -19,6 +19,7 @@
                <ul class='list-group' data-bind="foreach:locationList">
                   <li class='list-group-item' data-bind="text:name, visible: showMe, click:$parent.selectedLocation"></li>
                </ul>
+               <p data-bind="html: yelpError"></p>
             </aside>
             <main class='col-md-9 col-sm-9'>
                <h1>Map Area</h1>
