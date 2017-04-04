@@ -156,6 +156,9 @@ var vModel = {
 
 
             function populateInfoWindow(marker, infowindow) {
+
+                if (marker.yelpData) {
+
                 var name,rating,phone, address;
 
                 name = marker.yelpData.name || 'no name provided';
@@ -171,7 +174,10 @@ var vModel = {
                 infowindow.setContent(content);
                 infowindow.open(map, marker);
 
-            }
+                } else {
+                infowindow.setContent("You sooo fast! Yelp Data is loading. Try again.")
+                };
+           };
 
             function toggleBounce(marker) {
                 marker.setAnimation(google.maps.Animation.BOUNCE);
